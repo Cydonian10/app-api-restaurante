@@ -1,0 +1,27 @@
+services:
+  # Define el contenedor de la base de datos.
+  postgres_restaurante:
+    # Usa la versión 16 de la imagen oficial de PostgreSQL.
+    image: postgres:16
+    environment:
+      # Crea la base de datos y el usuario al iniciar por primera vez.
+      # Los valores después de :- se usan si no se definen variables de entorno.
+      POSTGRES_DB: ${POSTGRES_DB:-restaurante}
+      POSTGRES_USER: ${POSTGRES_USER:-restaurante}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-restaurante}
+    ports:
+      # Conecta el puerto de la computadora con el puerto 5432 del contenedor.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Guarda los datos fuera del contenedor para conservarlos al recrearlo.
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Comprueba periódicamente si PostgreSQL acepta conexiones.
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Declara el volumen persistente usado por PostgreSQL.
+volumes:
+  postgres_data:
