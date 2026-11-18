@@ -10,12 +10,10 @@ async function bootstrap() {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   const settings = app.get(ConfigService);
 
-  const origins = [
-    ...(settings.get<string>('CORS_ORIGINS') ?? '')
-      .split(',')
-      .map((value) => value.trim())
-      .filter(Boolean),
-  ];
+  const origins = (settings.get<string>('CORS_ORIGINS') ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
 
   app.enableCors({ origin: origins, credentials: true });
 
