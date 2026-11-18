@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { UserRole } from '../../users/enums/user-role.enum.js';
 import { ConfigService } from '@nestjs/config';
 import { GoogleLoginService } from './google-login.service.js';
 
@@ -40,8 +41,17 @@ describe('Google login flow', () => {
     const tokens = { issue: vi.fn().mockResolvedValue({ accessToken: 'jwt' }) };
     const user = {
       id: 'user-id',
-      name: 'Ana',
+      person: {
+        id: 'person-id',
+        name: 'Ana',
+        lastName: null,
+        phone: null,
+        document: null,
+        birthDate: null,
+        residence: null,
+      },
       email: 'ana@example.com',
+      role: UserRole.CLIENTE,
       emailVerified: true,
       createdAt: new Date('2025-01-01'),
     };
@@ -68,7 +78,15 @@ describe('Google login flow', () => {
     await expect(service.exchange(code, 'other-browser')).rejects.toThrow();
     expect(await service.exchange(code, started.binding)).toEqual({
       accessToken: 'jwt',
-      user,
+      user: {
+        id: user.id,
+        name: 'Ana',
+        person: user.person,
+        email: user.email,
+        role: UserRole.CLIENTE,
+        emailVerified: true,
+        createdAt: user.createdAt,
+      },
     });
     expect(users.findOneBy).toHaveBeenCalledWith({ id: 'user-id' });
     await expect(service.exchange(code, started.binding)).rejects.toThrow();

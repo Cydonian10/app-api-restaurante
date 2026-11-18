@@ -2,6 +2,9 @@ import { PasswordHasher, type OidcProfile } from '@nestjs/authentication';
 import { Injectable } from '@nestjs/common';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { DataSource } from 'typeorm';
+import { UserRole } from '../../users/enums/user-role.enum.js';
+import { Person } from '../../users/entities/person.entity.js';
+import { User } from '../entities/user.entity.js';
 import { ExternalIdentity } from '../entities/external-identity.entity.js';
 
 @Injectable()
@@ -11,7 +14,13 @@ export class GoogleAccountResolver {
     private readonly hasher: PasswordHasher,
   ) {}
   async resolve(
-    profile: { subject: string; email: string; name?: string },
+    profile: {
+      subject: string;
+      email: string;
+      name?: string;
+      givenName?: string;
+      familyName?: string;
+    },
     linkUserId?: string,
   ): Promise<string> {
     const user = await this.resolveUser(
@@ -21,7 +30,10 @@ export class GoogleAccountResolver {
         email: profile.email,
         name: profile.name,
         emailVerified: true,
-        claims: {},
+        claims: {
+          given_name: profile.givenName,
+          family_name: profile.familyName,
+        },
       },
       linkUserId,
     );
@@ -76,10 +88,27 @@ export class GoogleAccountResolver {
       if (!id) {
         id = randomUUID();
         const hash = await this.hasher.hash(randomBytes(32).toString('hex'));
-        await manager.query(
-          'INSERT INTO users (id, name, email, password_hash, email_verified) VALUES ($1, $2, $3, $4, true)',
-          [id, (profile.name?.trim() || email).slice(0, 120), email, hash],
-        );
+        const givenName =
+          typeof profile.claims?.given_name === 'string'
+            ? profile.claims.given_name.trim()
+            : '';
+        const familyName =
+          typeof profile.claims?.family_name === 'string'
+            ? profile.claims.family_name.trim()
+            : '';
+        await manager.insert(User, {
+          id,
+          email,
+          passwordHash: hash,
+          emailVerified: true,
+          role: UserRole.CLIENTE,
+        });
+        await manager.insert(Person, {
+          id: randomUUID(),
+          userId: id,
+          name: (givenName || profile.name?.trim() || email).slice(0, 120),
+          lastName: givenName && familyName ? familyName.slice(0, 120) : null,
+        });
       }
       await manager.insert(ExternalIdentity, {
         provider: 'google',

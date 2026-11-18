@@ -19,6 +19,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   async execute({ data }: LoginCommand) {
     const user = await this.users
       .createQueryBuilder('user')
+      .leftJoinAndSelect('user.person', 'person')
       .addSelect('user.passwordHash')
       .where('user.email = :email', { email: data.email })
       .getOne();
