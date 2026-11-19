@@ -4,10 +4,11 @@ import { User } from '../auth/entities/user.entity.js';
 import { Person } from './entities/person.entity.js';
 import { UsersController } from './controllers/users.controller.js';
 import { CreateUserHandler } from './commands/create-user/create-user.handler.js';
+import { ListUsersHandler } from './queries/list-users/list-users.handler.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Person])],
   controllers: [UsersController],
-  providers: [CreateUserHandler],
+  providers: [CreateUserHandler, ListUsersHandler],
 })
 export class UsersModule {}

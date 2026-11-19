@@ -1,18 +1,82 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Authenticate } from '@nestjs/authentication';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { PublicUser } from '../../auth/dtos/public-user.dto.js';
+import { JwtAuthProvider } from '../../auth/providers/jwt-auth.provider.js';
 import { CreateUserCommand } from '../commands/create-user/create-user.command.js';
 import {
   createUserSchema,
   type CreateUserDto,
 } from '../dtos/create-user.dto.js';
+import {
+  DEFAULT_USERS_LIMIT,
+  DEFAULT_USERS_PAGE,
+  ListUsersResponseDto,
+  listUsersSchema,
+  MAX_USERS_LIMIT,
+  type ListUsersDto,
+} from '../dtos/list-users.dto.js';
+import { UserRole } from '../enums/user-role.enum.js';
+import { ListUsersAdminGuard } from '../guards/list-users-admin.guard.js';
+import { ListUsersQuery } from '../queries/list-users/list-users.query.js';
 
 @ApiTags('Usuarios')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly commands: CommandBus) {}
+  constructor(
+    private readonly commands: CommandBus,
+    private readonly queries: QueryBus,
+  ) {}
+
+  @Get()
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @ApiOperation({ summary: 'Listar usuarios (solo administradores)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    schema: { type: 'integer', minimum: 1, default: DEFAULT_USERS_PAGE },
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    schema: {
+      type: 'integer',
+      minimum: 1,
+      maximum: MAX_USERS_LIMIT,
+      default: DEFAULT_USERS_LIMIT,
+    },
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Busca por nombre, apellido, nombre completo o correo, sin distinguir mayúsculas.',
+  })
+  @ApiQuery({ name: 'role', enum: UserRole, required: false })
+  @ApiQuery({ name: 'emailVerified', type: Boolean, required: false })
+  @ApiOkResponse({
+    type: ListUsersResponseDto,
+    description: 'Página de usuarios. Fuera de rango, items está vacío.',
+  })
+  @ApiBadRequestResponse({ description: 'Parámetros de consulta inválidos.' })
+  @ApiUnauthorizedResponse({ description: 'Token ausente o inválido.' })
+  @ApiForbiddenResponse({ description: 'Se requiere el rol ADMIN.' })
+  list(@Query({ schema: listUsersSchema }) query: ListUsersDto) {
+    return this.queries.execute(new ListUsersQuery(query));
+  }
 
   @Post()
   @ApiOperation({ summary: 'Crear un usuario con sus datos personales' })

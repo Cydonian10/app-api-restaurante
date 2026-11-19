@@ -14,6 +14,14 @@ Inicia la API y abre Swagger en `http://localhost:3000/docs` (ajusta el puerto s
 
 Luego utiliza **POST /api/v1/auth/login** con el mismo correo y contraseña. Para probar **GET /api/v1/auth/me**, copia el `accessToken` de la respuesta y colócalo en **Authorize**. El registro es público y devuelve los datos del usuario sin contraseña.
 
+### Listado de usuarios
+
+Inicia sesión con una cuenta de rol `ADMIN` y abre **Administración → Usuarios** en el frontend (`/admin/usuarios`). Las cuentas registradas públicamente no reciben permisos de administrador.
+
+El listado usa `GET /api/v1/users` con el token Bearer. Puedes probarlo desde Swagger, por ejemplo con `page=1&limit=10&search=ana&role=CLIENTE&emailVerified=false`. Los filtros son opcionales y la API pagina los resultados ya filtrados. Cada fila incluye el correo, rol, verificación y los datos de contacto básicos de la persona; no incluye documento, fecha de nacimiento ni domicilio.
+
+Con PostgreSQL de pruebas configurado y las migraciones aplicadas, ejecuta `npm run test:e2e -- test/users-list.e2e-spec.ts` para comprobar el endpoint.
+
 ## Verificación de correo con Resend
 
 1. Crea una cuenta en Resend y verifica un dominio de envío mediante los registros DNS indicados por Resend. Para las restricciones del dominio de prueba, consulta la documentación de Resend.
