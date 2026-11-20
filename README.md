@@ -8,6 +8,12 @@ npm run migration:run
 npm run migration:revert
 ```
 
+## Almacenamiento de imágenes de productos
+
+`IMAGE_STORAGE_PROVIDER` selecciona `cloudinary` (predeterminado) o `local`. Para Cloudinary configura `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET`; las credenciales se validan al subir o eliminar una imagen. No publiques el secreto.
+
+Para almacenamiento local configura `IMAGE_LOCAL_DIR` (por defecto `./uploads/products`) y `IMAGE_LOCAL_BASE_URL` con la URL pública que apunta a `/uploads/products`. El proceso necesita permisos de escritura; usa un volumen persistente compartido entre instancias y asegúrate de que el proxy exponga esa ruta. Cambiar de proveedor no migra las imágenes existentes.
+
 ## Autenticación y usuarios
 
 Inicia la API y abre Swagger en `http://localhost:3000/docs` (ajusta el puerto si cambiaste `PORT`). Para crear el primer usuario, abre **Autenticación y usuarios → POST /api/v1/auth/register**, pulsa **Try it out**, introduce nombre, correo y una contraseña de 8 a 128 caracteres, y ejecuta la solicitud.

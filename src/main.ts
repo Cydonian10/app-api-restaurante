@@ -3,12 +3,21 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
+import { static as serveStatic } from 'express';
+import { resolve } from 'node:path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   const settings = app.get(ConfigService);
+  app.use(
+    '/uploads/products',
+    serveStatic(
+      resolve(settings.get<string>('IMAGE_LOCAL_DIR') ?? './uploads/products'),
+      { fallthrough: false, index: false },
+    ),
+  );
 
   const origins = (settings.get<string>('CORS_ORIGINS') ?? '')
     .split(',')
