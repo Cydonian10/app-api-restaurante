@@ -1,0 +1,5 @@
+# spec workflow configuration
+# AutoCreateBranch: true creates and switches to the spec branch automatically.
+AutoCreateBranch: true
+# AutoCommitSteps: false leaves commits to the user.
+AutoCommitSteps: false
