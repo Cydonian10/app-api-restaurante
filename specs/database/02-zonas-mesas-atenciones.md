@@ -1,6 +1,6 @@
 # SPEC 02 — Zonas, mesas y atenciones
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** Ninguna
 > **Fecha:** 2026-11-20
 > **Objetivo:** Diseñar en TypeORM los datos y reglas de zonas, mesas y atenciones de un restaurante.
