@@ -3,7 +3,11 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ConflictException,
   Inject,
+  NotFoundException,
+  Param,
+  ParseUUIDPipe,
   Post,
   UploadedFile,
   UseGuards,
@@ -18,7 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { JwtAuthProvider } from '../auth/providers/jwt-auth.provider.js';
 import { ListUsersAdminGuard } from '../users/guards/list-users-admin.guard.js';
 import {
@@ -128,5 +132,52 @@ export class ProductsController {
       if (image) await this.storage.delete(image.key).catch(() => undefined);
       throw error;
     }
+  }
+
+  @Post(':id/imagen')
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @UseInterceptors(
+    FileInterceptor('imagen', { limits: { fileSize: 5 * 1024 * 1024 } }),
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Agregar una imagen a un producto sin imagen' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['imagen'],
+      properties: { imagen: { type: 'string', format: 'binary' } },
+    },
+  })
+  async addImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile() file?: UploadedImage,
+  ) {
+    if (!file) throw new BadRequestException('La imagen es obligatoria');
+    const imageFile = validateImage(file);
+    const product = await this.products.findOneBy({ id });
+    if (!product) throw new NotFoundException('Producto no encontrado');
+    if (product.imageUrl)
+      throw new ConflictException('El producto ya tiene una imagen');
+    const image = await this.storage.upload(imageFile);
+    try {
+      const result = await this.products.update(
+        { id, imageUrl: IsNull() },
+        {
+          imageUrl: image.url,
+          imageProvider: image.provider,
+          imageKey: image.key,
+        },
+      );
+      if (!result.affected)
+        throw new ConflictException(
+          'El producto ya tiene una imagen o no existe',
+        );
+    } catch (error) {
+      await this.storage.delete(image.key).catch(() => undefined);
+      throw error;
+    }
+    return { id, imageUrl: image.url };
   }
 }
