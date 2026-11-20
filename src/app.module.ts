@@ -7,6 +7,7 @@ import databaseConfig from './config/database.config.js';
 import { AuthenticationConfigModule } from './config/authentication-config.module.js';
 import { MailConfigModule } from './config/mail-config.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { ProductsModule } from './products/products.module.js';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DatabaseModule } from './database/database.module.js';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],
