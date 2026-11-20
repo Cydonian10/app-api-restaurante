@@ -1,6 +1,6 @@
 # SPEC 03 — Pedidos, menús y entregas
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-11-20
 > **Objetivo:** Diseñar las entidades y reglas de pedidos por atención con menús y seguimiento de entrega por unidad.
@@ -41,16 +41,16 @@
 
 ## Criterios de aceptación
 
-- [ ] Las entidades y el enum compilan y representan las relaciones y campos descritos.
-- [ ] El catálogo admite los tipos existentes más `MENU` y `BEBIDA_MENU`.
-- [ ] El modelo representa una atención con cuatro pedidos y unidades de un mismo pedido entregadas en momentos distintos.
-- [ ] Cada unidad conserva su nombre y precio acordados y tiene estado y fecha de entrega propios.
-- [ ] Cada menú admite cero o un extra y cero o una bebida de menú gratuitos; se documentan las validaciones de tipo y elegibilidad que requieren implementación adicional.
-- [ ] El modelo conserva las referencias de las opciones gratuitas sin copiar sus nombres ni registrar sus entregas por separado.
-- [ ] Se documenta que una unidad puede cancelarse antes de entregarse, que una entregada no puede cancelarse y que la cancelación conserva el historial.
-- [ ] Se documenta que solo se agregan pedidos a atenciones abiertas y que estas se cierran cuando todas las unidades están entregadas o canceladas.
-- [ ] Se distinguen las restricciones declaradas en las entidades de las reglas que requieren implementación transaccional adicional.
-- [ ] No se generan ni ejecutan migraciones y no se agregan endpoints, servicios ni cobros.
+- [x] Las entidades y el enum compilan y representan las relaciones y campos descritos.
+- [x] El catálogo admite los tipos existentes más `MENU` y `BEBIDA_MENU`.
+- [x] El modelo representa una atención con cuatro pedidos y unidades de un mismo pedido entregadas en momentos distintos.
+- [x] Cada unidad conserva su nombre y precio acordados y tiene estado y fecha de entrega propios.
+- [x] Cada menú admite cero o un extra y cero o una bebida de menú gratuitos; se documentan las validaciones de tipo y elegibilidad que requieren implementación adicional.
+- [x] El modelo conserva las referencias de las opciones gratuitas sin copiar sus nombres ni registrar sus entregas por separado.
+- [x] Se documenta que una unidad puede cancelarse antes de entregarse, que una entregada no puede cancelarse y que la cancelación conserva el historial.
+- [x] Se documenta que solo se agregan pedidos a atenciones abiertas y que estas se cierran cuando todas las unidades están entregadas o canceladas.
+- [x] Se distinguen las restricciones declaradas en las entidades de las reglas que requieren implementación transaccional adicional.
+- [x] No se generan ni ejecutan migraciones y no se agregan endpoints, servicios ni cobros.
 
 ## Decisiones
 
