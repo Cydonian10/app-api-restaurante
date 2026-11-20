@@ -1,4 +1,4 @@
-import { Authenticate } from '@nestjs/authentication';
+import { Authenticate, Public } from '@nestjs/authentication';
 import {
   Body,
   Controller,
@@ -64,6 +64,7 @@ export class ProductsController {
   ) {}
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Listar productos disponibles' })
   @ApiOkResponse({ type: ProductPageSwaggerDto })
   @ApiBadRequestResponse({ description: 'Parámetros de consulta inválidos.' })
