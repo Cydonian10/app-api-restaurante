@@ -18,6 +18,7 @@ import { getDatabaseConfig } from '../src/config/database.config.js';
 import type { ListUsersResponseDto } from '../src/users/dtos/list-users.dto.js';
 import { Person } from '../src/users/entities/person.entity.js';
 import { UserRole } from '../src/users/enums/user-role.enum.js';
+import { Product } from '../src/products/entities/product.entity.js';
 
 describe('GET /api/v1/users', () => {
   const path = '/api/v1/users';
@@ -43,7 +44,7 @@ describe('GET /api/v1/users', () => {
             type: 'postgres',
             ...getDatabaseConfig(),
             // Resolve entities through Vitest rather than TypeORM's native TS loader.
-            entities: [User, Person, ExternalIdentity, OidcFlow],
+            entities: [User, Person, ExternalIdentity, OidcFlow, Product],
           }).initialize(),
       })
       .compile();
