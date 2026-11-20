@@ -3,4 +3,6 @@ export enum ProductType {
   EXTRA = 'EXTRA',
   PLATO_FONDO = 'PLATO_FONDO',
   POSTRE = 'POSTRE',
+  MENU = 'MENU',
+  BEBIDA_MENU = 'BEBIDA_MENU',
 }
