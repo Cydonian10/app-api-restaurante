@@ -15,7 +15,7 @@ export class MenuSelection {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'order_item_id', type: 'uuid', unique: true })
+  @Column({ name: 'order_item_id', type: 'uuid' })
   orderItemId: string;
 
   @OneToOne(() => OrderItem, { nullable: false, onDelete: 'RESTRICT' })
