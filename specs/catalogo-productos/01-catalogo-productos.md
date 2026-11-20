@@ -1,6 +1,6 @@
 # SPEC 01 — Catálogo de productos
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** Ninguna
 > **Fecha:** 2026-11-19
 > **Objetivo:** Crear y consultar productos del restaurante con disponibilidad e imágenes en almacenamiento intercambiable.

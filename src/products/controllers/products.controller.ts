@@ -30,30 +30,30 @@ import {
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthProvider } from '../auth/providers/jwt-auth.provider.js';
-import { ListUsersAdminGuard } from '../users/guards/list-users-admin.guard.js';
+import { JwtAuthProvider } from '../../auth/providers/jwt-auth.provider.js';
+import { ListUsersAdminGuard } from '../../users/guards/list-users-admin.guard.js';
 import {
   createProductSchema,
   type CreateProductDto,
-} from './dtos/create-product.dto.js';
-import { ProductType } from './enums/product-type.enum.js';
+} from '../dtos/create-product.dto.js';
+import { ProductType } from '../enums/product-type.enum.js';
 import {
   listProductsSchema,
   type ListProductsDto,
-} from './dtos/list-products.dto.js';
-import type { UploadedImage } from './storage/image-validation.js';
-import { CreateProductCommand } from './commands/create-product/create-product.command.js';
-import { AddProductImageCommand } from './commands/add-product-image/add-product-image.command.js';
-import { ListProductsQuery } from './queries/list-products/list-products.query.js';
-import { UpdateAvailabilityCommand } from './commands/update-availability/update-availability.command.js';
+} from '../dtos/list-products.dto.js';
+import type { UploadedImage } from '../storage/image-validation.js';
+import { CreateProductCommand } from '../commands/create-product/create-product.command.js';
+import { AddProductImageCommand } from '../commands/add-product-image/add-product-image.command.js';
+import { ListProductsQuery } from '../queries/list-products/list-products.query.js';
+import { UpdateAvailabilityCommand } from '../commands/update-availability/update-availability.command.js';
 import {
   updateAvailabilitySchema,
   type UpdateAvailabilityDto,
-} from './dtos/update-availability.dto.js';
+} from '../dtos/update-availability.dto.js';
 import {
   ProductPageSwaggerDto,
   ProductSwaggerDto,
-} from './dtos/product-swagger.dto.js';
+} from '../dtos/product-swagger.dto.js';
 
 @ApiTags('Productos')
 @Controller('products')

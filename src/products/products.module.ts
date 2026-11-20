@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
 import { IMAGE_STORAGE } from './storage/image-storage.js';
 import { CloudinaryImageStorage } from './storage/cloudinary-image.storage.js';
 import { LocalImageStorage } from './storage/local-image.storage.js';
-import { ProductsController } from './products.controller.js';
+import { ProductsController } from './controllers/products.controller.js';
 import { ListUsersAdminGuard } from '../users/guards/list-users-admin.guard.js';
 
 @Module({
