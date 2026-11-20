@@ -10,10 +10,15 @@ import {
   type Relation,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity.js';
+import { OrderItemStatus } from '../enums/order-item-status.enum.js';
 import { Order } from './order.entity.js';
 
 @Entity('order_items')
 @Check('chk_order_items_unit_price_nonnegative', '"unit_price" >= 0')
+@Check(
+  'chk_order_items_delivered_at_status',
+  `("status" = 'DELIVERED' AND "delivered_at" IS NOT NULL) OR ("status" <> 'DELIVERED' AND "delivered_at" IS NULL)`,
+)
 export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -40,6 +45,12 @@ export class OrderItem {
 
   @Column({ name: 'unit_price', type: 'decimal', precision: 12, scale: 2 })
   unitPrice: string;
+
+  @Column({ type: 'enum', enum: OrderItemStatus, enumName: 'order_item_status_enum' })
+  status: OrderItemStatus;
+
+  @Column({ name: 'delivered_at', type: 'timestamptz', nullable: true })
+  deliveredAt: Date | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
