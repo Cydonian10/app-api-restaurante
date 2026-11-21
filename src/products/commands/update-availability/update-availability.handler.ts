@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity.js';
 import { UpdateAvailabilityCommand } from './update-availability.command.js';
 
@@ -12,7 +12,10 @@ export class UpdateAvailabilityHandler implements ICommandHandler<UpdateAvailabi
   ) {}
 
   async execute({ id, disponible }: UpdateAvailabilityCommand) {
-    const result = await this.products.update({ id }, { disponible });
+    const result = await this.products.update(
+      { id, deletedAt: IsNull() },
+      { disponible },
+    );
     if (!result.affected) throw new NotFoundException('Producto no encontrado');
     return { id, disponible };
   }

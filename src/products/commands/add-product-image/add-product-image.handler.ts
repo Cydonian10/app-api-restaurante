@@ -23,14 +23,14 @@ export class AddProductImageHandler implements ICommandHandler<AddProductImageCo
   async execute({ id, file }: AddProductImageCommand) {
     if (!file) throw new BadRequestException('La imagen es obligatoria');
     const imageFile = validateImage(file);
-    const product = await this.products.findOneBy({ id });
+    const product = await this.products.findOneBy({ id, deletedAt: IsNull() });
     if (!product) throw new NotFoundException('Producto no encontrado');
     if (product.imageUrl)
       throw new ConflictException('El producto ya tiene una imagen');
     const image = await this.storage.upload(imageFile);
     try {
       const result = await this.products.update(
-        { id, imageUrl: IsNull() },
+        { id, imageUrl: IsNull(), deletedAt: IsNull() },
         {
           imageUrl: image.url,
           imageProvider: image.provider,

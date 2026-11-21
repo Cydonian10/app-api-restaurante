@@ -187,6 +187,77 @@ describe('productos HTTP', () => {
       .expect(404);
   });
 
+  it('protege, edita y da de baja sin borrar el registro', async () => {
+    const created = await request(app.getHttpServer())
+      .post('/api/v1/products')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .field('nombre', 'Original')
+      .field('precio', '1')
+      .field('tipo', 'BEBIDA')
+      .expect(201);
+    const id = (created.body as { id: string }).id;
+    productIds.push(id);
+    await request(app.getHttpServer())
+      .patch(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(403);
+    await request(app.getHttpServer())
+      .delete(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(403);
+    await request(app.getHttpServer())
+      .patch(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .field('nombre', 'Editado')
+      .field('descripcion', 'Detalle')
+      .field('precio', '4.50')
+      .field('tipo', 'POSTRE')
+      .attach('imagen', png, { filename: 'foto.png', contentType: 'image/png' })
+      .expect(200);
+    expect(await db.getRepository(Product).findOneBy({ id })).toMatchObject({
+      nombre: 'Editado',
+      descripcion: 'Detalle',
+      precio: '4.50',
+      tipo: 'POSTRE',
+      imageUrl: expect.any(String),
+    });
+    await request(app.getHttpServer())
+      .delete(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect(
+      (await db.getRepository(Product).findOneBy({ id }))?.deletedAt,
+    ).toBeInstanceOf(Date);
+    for (const path of ['/api/v1/products', '/api/v1/products/admin']) {
+      const response = await request(app.getHttpServer())
+        .get(path)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .query({ tipo: 'POSTRE', limit: 100 })
+        .expect(200);
+      expect(
+        (response.body as { items: { id: string }[] }).items.some(
+          (item) => item.id === id,
+        ),
+      ).toBe(false);
+    }
+    await request(app.getHttpServer())
+      .patch(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .field('nombre', 'x')
+      .field('precio', '1')
+      .field('tipo', 'BEBIDA')
+      .expect(404);
+    await request(app.getHttpServer())
+      .patch(`/api/v1/products/${id}/disponibilidad`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ disponible: true })
+      .expect(404);
+    await request(app.getHttpServer())
+      .delete(`/api/v1/products/${id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+  });
+
   it('crea con imagen y rechaza archivos inválidos', async () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/products')

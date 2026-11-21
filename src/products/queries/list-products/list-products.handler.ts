@@ -1,6 +1,6 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity.js';
 import { ListProductsQuery } from './list-products.query.js';
 @QueryHandler(ListProductsQuery)
@@ -11,6 +11,7 @@ export class ListProductsHandler implements IQueryHandler<ListProductsQuery> {
   async execute({ filters: query, admin }: ListProductsQuery) {
     const { page, limit, tipo } = query;
     const where = {
+      deletedAt: IsNull(),
       ...(admin ? {} : { disponible: true }),
       ...(tipo ? { tipo } : {}),
     };

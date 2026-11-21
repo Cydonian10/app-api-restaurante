@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Repository } from 'typeorm';
+import { IsNull, type Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity.js';
 import { updateAvailabilitySchema } from '../../dtos/update-availability.dto.js';
 import { UpdateAvailabilityCommand } from './update-availability.command.js';
@@ -25,7 +25,7 @@ describe('cambiar disponibilidad', () => {
       handler.execute(new UpdateAvailabilityCommand('id', false)),
     ).resolves.toEqual({ id: 'id', disponible: false });
     expect(products.update).toHaveBeenCalledWith(
-      { id: 'id' },
+      { id: 'id', deletedAt: IsNull() },
       { disponible: false },
     );
   });

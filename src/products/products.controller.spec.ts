@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Repository } from 'typeorm';
+import { IsNull, type Repository } from 'typeorm';
 import { createProductSchema } from './dtos/create-product.dto.js';
 import { Product } from './entities/product.entity.js';
 import { ProductType } from './enums/product-type.enum.js';
@@ -113,11 +113,19 @@ describe('listar productos', () => {
       totalPages: 3,
     });
     expect(products.count).toHaveBeenCalledWith({
-      where: { disponible: true, tipo: ProductType.BEBIDA },
+      where: {
+        deletedAt: IsNull(),
+        disponible: true,
+        tipo: ProductType.BEBIDA,
+      },
     });
     expect(products.find).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { disponible: true, tipo: ProductType.BEBIDA },
+        where: {
+          deletedAt: IsNull(),
+          disponible: true,
+          tipo: ProductType.BEBIDA,
+        },
         skip: 5,
         take: 5,
       }),
@@ -138,7 +146,9 @@ describe('listar productos', () => {
       total: 1,
       totalPages: 1,
     });
-    expect(products.count).toHaveBeenCalledWith({ where: {} });
+    expect(products.count).toHaveBeenCalledWith({
+      where: { deletedAt: IsNull() },
+    });
     expect(products.find).not.toHaveBeenCalled();
   });
 });

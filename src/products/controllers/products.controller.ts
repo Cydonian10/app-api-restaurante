@@ -2,6 +2,7 @@ import { Authenticate, Public } from '@nestjs/authentication';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -36,6 +37,10 @@ import {
   createProductSchema,
   type CreateProductDto,
 } from '../dtos/create-product.dto.js';
+import {
+  UpdateProductCommand,
+  DeleteProductCommand,
+} from '../commands/manage-product/manage-product.command.js';
 import { ProductType } from '../enums/product-type.enum.js';
 import {
   listProductsSchema,
@@ -130,6 +135,57 @@ export class ProductsController {
     @UploadedFile() file?: UploadedImage,
   ) {
     return this.commands.execute(new CreateProductCommand(body, file));
+  }
+
+  @Patch(':id')
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @UseInterceptors(
+    FileInterceptor('imagen', { limits: { fileSize: 5 * 1024 * 1024 } }),
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Editar producto (solo administradores)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['nombre', 'precio', 'tipo'],
+      properties: {
+        nombre: { type: 'string' },
+        descripcion: { type: 'string' },
+        precio: { type: 'string' },
+        tipo: {
+          type: 'string',
+          enum: ['BEBIDA', 'EXTRA', 'PLATO_FONDO', 'POSTRE'],
+        },
+        imagen: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Producto actualizado.' })
+  @ApiBadRequestResponse({ description: 'Datos o imagen inválidos.' })
+  @ApiUnauthorizedResponse({ description: 'Token ausente o inválido.' })
+  @ApiForbiddenResponse({ description: 'Se requiere el rol ADMIN.' })
+  @ApiNotFoundResponse({ description: 'Producto no encontrado.' })
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body({ schema: createProductSchema }) body: CreateProductDto,
+    @UploadedFile() file?: UploadedImage,
+  ) {
+    return this.commands.execute(new UpdateProductCommand(id, body, file));
+  }
+
+  @Delete(':id')
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Dar de baja producto (solo administradores)' })
+  @ApiOkResponse({ description: 'Producto dado de baja.' })
+  @ApiUnauthorizedResponse({ description: 'Token ausente o inválido.' })
+  @ApiForbiddenResponse({ description: 'Se requiere el rol ADMIN.' })
+  @ApiNotFoundResponse({ description: 'Producto no encontrado.' })
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.commands.execute(new DeleteProductCommand(id));
   }
 
   @Post(':id/imagen')

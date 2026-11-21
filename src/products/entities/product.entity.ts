@@ -36,6 +36,9 @@ export class Product {
   @Column({ name: 'image_key', type: 'text', nullable: true })
   imageKey: string | null;
 
+  @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  deletedAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
