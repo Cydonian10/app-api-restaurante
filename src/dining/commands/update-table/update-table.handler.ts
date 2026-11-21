@@ -32,7 +32,7 @@ export class UpdateTableHandler implements ICommandHandler<UpdateTableCommand> {
         if (!table) throw new NotFoundException('Mesa no encontrada');
         const session = await manager
           .getRepository(TableSession)
-          .findOneBy({ tableId: id, closedAt: IsNull() });
+          .findOne({ select: { id: true, partySize: true }, where: { tableId: id, closedAt: IsNull() } });
         if (session && (deactivate || input.outOfService === true))
           throw new ConflictException('La mesa tiene una atención abierta');
         if (

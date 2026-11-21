@@ -21,7 +21,7 @@ export class ListDiningHandler implements IQueryHandler<ListDiningQuery> {
       .find({ where: { active: true }, order: { number: 'ASC' } });
     const sessions = await this.db
       .getRepository(TableSession)
-      .find({ where: { closedAt: IsNull() } });
+      .find({ select: { tableId: true }, where: { closedAt: IsNull() } });
     const occupied = new Set(sessions.map((session) => session.tableId));
     return zones.map((zone) => ({
       ...zone,
