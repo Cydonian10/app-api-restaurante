@@ -39,6 +39,9 @@ export class TableSession {
   @Column({ name: 'party_size', type: 'integer' })
   partySize: number;
 
+  @Column({ name: 'responsible_name', type: 'text', nullable: true })
+  responsibleName: string | null;
+
   @Column({ name: 'opened_at', type: 'timestamptz', default: () => 'now()' })
   openedAt: Date;
 
