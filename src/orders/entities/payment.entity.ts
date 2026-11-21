@@ -16,7 +16,7 @@ export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'table_session_id', type: 'uuid', unique: true })
+  @Column({ name: 'table_session_id', type: 'uuid' })
   tableSessionId: string;
 
   @OneToOne(() => TableSession, { nullable: false, onDelete: 'RESTRICT' })
