@@ -1,6 +1,6 @@
 # SPEC 04 — Cuenta, pago y ticket de atención
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02, SPEC 03
 > **Fecha:** 2026-11-20
 > **Objetivo:** Diseñar los datos y reglas para cobrar una atención de mesa y generar su ticket interno.
@@ -37,14 +37,14 @@
 
 ## Criterios de aceptación
 
-- [ ] Una atención admite un responsable opcional y como máximo un pago.
-- [ ] El pago registra importe positivo, fecha y un único medio entre efectivo y Yape.
-- [ ] La cuenta suma únicamente unidades entregadas y excluye las canceladas.
-- [ ] Se documenta que no se cobra mientras existan unidades pendientes de entrega y que el pago cubre el total completo.
-- [ ] Se documenta que la atención solo se cierra después del pago, salvo cuando todas sus unidades están canceladas.
-- [ ] Los datos persistidos permiten generar el ticket interno sin almacenar una copia.
-- [ ] Se distinguen las restricciones de base de datos de las reglas que requieren validación transaccional.
-- [ ] No se agregan servicios, endpoints ni impresión y no se generan ni ejecutan migraciones.
+- [x] Una atención admite un responsable opcional y como máximo un pago.
+- [x] El pago registra importe positivo, fecha y un único medio entre efectivo y Yape.
+- [x] La cuenta suma únicamente unidades entregadas y excluye las canceladas.
+- [x] Se documenta que no se cobra mientras existan unidades pendientes de entrega y que el pago cubre el total completo.
+- [x] Se documenta que la atención solo se cierra después del pago, salvo cuando todas sus unidades están canceladas.
+- [x] Los datos persistidos permiten generar el ticket interno sin almacenar una copia.
+- [x] Se distinguen las restricciones de base de datos de las reglas que requieren validación transaccional.
+- [x] No se agregan servicios, endpoints ni impresión y no se generan ni ejecutan migraciones.
 
 ## Decisiones
 
