@@ -38,6 +38,12 @@ export class DiningTable {
   @Column({ type: 'integer' })
   capacity: number;
 
+  @Column({ name: 'position_x', type: 'integer' })
+  positionX: number;
+
+  @Column({ name: 'position_y', type: 'integer' })
+  positionY: number;
+
   @Column({ default: true })
   active: boolean;
 
