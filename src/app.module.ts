@@ -8,6 +8,7 @@ import { AuthenticationConfigModule } from './config/authentication-config.modul
 import { MailConfigModule } from './config/mail-config.module.js';
 import { DatabaseModule } from './database/database.module.js';
 import { ProductsModule } from './products/products.module.js';
+import { DiningModule } from './dining/dining.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductsModule } from './products/products.module.js';
     UsersModule,
     AuthModule,
     ProductsModule,
+    DiningModule,
   ],
   controllers: [],
   providers: [],
