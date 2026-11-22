@@ -23,11 +23,48 @@ Validation works with Zod, Valibot, ArkType or any other Standard Schema library
 
 Nest's packages are ESM only, and this project is ESM too: relative imports end in `.js`, `__dirname` doesn't exist (use `import.meta.dirname`), and tests run on Vitest, so mocks are `vi.fn()`, not `jest.fn()`.
 
-## Production data: NestJS Observe
+## Arquitectura
 
-This app's production telemetry - traces, errors, logs and metrics - goes to [NestJS Observe](https://observe.nestjs.com). Until `ObserveModule` is registered in `src/app.module.ts`, nothing is sent: `npx @nestjs/observe link` sets it up in one step - it installs `@nestjs/observe`, wires it into the app, and writes the key pair (`OBSERVE_APP_KEY`, `OBSERVE_APP_SECRET`) to `.env`.
+- Respetar la arquitectura y las convenciones existentes del proyecto.
+- Consultar `docs/arquitectura.md` cuando existan dudas sobre cómo implementar una funcionalidad o estructurar el código.
+- Seguir los patrones existentes antes de proponer soluciones nuevas.
+- No agregar capas, carpetas, dependencias ni abstracciones innecesarias.
+- No modificar la arquitectura establecida sin autorización.
+- Si una decisión arquitectónica no está documentada y no puede deducirse del código existente, preguntar antes de implementarla.
+- No asumir requisitos ni implementar funcionalidades que no hayan sido solicitadas.
 
-When a task depends on how the app behaves in production - an error users hit, a slow endpoint, a failing job, whether a release made things worse - work from that data, not from the code alone:
+## Testing
 
-- The Observe MCP server answers those questions directly: errors with their traces and logs, slow operations, jobs, and what a release changed (`find_regressions`, `diff_release`). It is included on the Pro plan and above. In Claude Code: `claude mcp add observe --transport http https://observe-api.nestjs.com/mcp`, and the client opens a browser to approve. Other clients: https://www.observe.nestjs.com/documentation/mcp
-- Without it, the user can open the request or error in the Observe dashboard and click **Copy agent prompt**, which hands over that page's trace, stack and logs as text.
+- Respetar las convenciones de pruebas existentes.
+- Consultar https://docs.nestjs.com/fundamentals/testing cuando sea necesario implementar o modificar pruebas.
+- Utilizar Vitest como framework de testing.
+
+### Unit Tests
+
+- Ubicar los tests junto al archivo que se prueba.
+- Utilizar la extensión `.spec.ts`.
+- Cada CommandHandler y QueryHandler debe tener pruebas unitarias.
+- Utilizar mocks para repositorios, servicios y dependencias externas.
+- Probar comportamientos, casos de error y reglas de negocio.
+- No utilizar una base de datos real en pruebas unitarias.
+
+### E2E Tests
+
+- Ubicar las pruebas E2E en `test/`.
+- Utilizar la extensión `.e2e-spec.ts`.
+- Probar los flujos completos desde los endpoints HTTP.
+- Validar respuestas, códigos HTTP y efectos en la base de datos.
+- Utilizar una base de datos exclusiva para pruebas.
+- No ejecutar pruebas sobre datos de producción.
+- Aislar y limpiar los datos generados por cada prueba.
+
+### Reglas generales
+
+- Crear o actualizar las pruebas cuando cambie un comportamiento.
+- No crear pruebas innecesarias para código trivial.
+- Ejecutar las pruebas relacionadas con los cambios realizados.
+- No modificar pruebas únicamente para ocultar errores.
+- No eliminar pruebas existentes sin justificación.
+- Si una prueba falla, investigar la causa antes de corregirla.
+- No afirmar que las pruebas pasaron si no fueron ejecutadas.
+- Preguntar si existen dudas sobre el alcance de las pruebas.
