@@ -41,8 +41,9 @@ mi-proyecto/
 │ │ │ └── obtener-producto.handler.spec.ts
 │ │ │
 │ │ ├── controllers/
-│ │ │ ├── productos.controller.ts
-│ │ │ └── productos.controller.spec.ts
+| | |   |_productos/
+│ │ │    ├── productos.controller.ts
+│ │ │    └── productos.controller.spec.ts
 │ │ │
 │ │ ├── dtos/
 │ │ │ ├── crear-producto/
