@@ -1,6 +1,6 @@
 # SPEC 01 — Creación y consulta de órdenes
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 03 de database
 > **Fecha:** 2026-11-22
 > **Objetivo:** Crear y consultar órdenes de una atención de mesa y agregarles unidades de productos mientras esté abierta.
@@ -42,16 +42,16 @@ Las consultas incluyen los ítems con nombre, precio, estado y selecciones de me
 
 ## Criterios de aceptación
 
-- [ ] Una atención abierta admite varias órdenes; cada creación guarda la orden y al menos un ítem de forma inmediata.
-- [ ] Es posible agregar ítems a cualquiera de esas órdenes mientras su atención permanezca abierta, incluso si sus ítems anteriores están entregados o cancelados.
-- [ ] Una cantidad de tres produce tres ítems independientes en estado `PENDING`, cada uno con el nombre y precio vigentes al agregarse.
-- [ ] Cada unidad de menú puede tener un extra y una bebida opcionales, independientes y distintos de los de otras unidades.
-- [ ] Una solicitud con producto u opción inválida no guarda ningún cambio.
-- [ ] Crear o agregar para una atención cerrada responde 409 y no guarda cambios; una atención u orden inexistente responde 404.
-- [ ] El detalle de una orden y el listado por atención incluyen sus ítems, estados, precios y selecciones, incluso tras el cierre.
-- [ ] Solo `ADMIN`, `ATENCION` y `MOZO` autenticados acceden a estas operaciones.
-- [ ] Las escrituras y el cierre concurrente no permiten agregar ítems a una atención ya cerrada.
-- [ ] Los endpoints están documentados en OpenAPI y las pruebas relacionadas verifican los escenarios y errores anteriores.
+- [x] Una atención abierta admite varias órdenes; cada creación guarda la orden y al menos un ítem de forma inmediata.
+- [x] Es posible agregar ítems a cualquiera de esas órdenes mientras su atención permanezca abierta, incluso si sus ítems anteriores están entregados o cancelados.
+- [x] Una cantidad de tres produce tres ítems independientes en estado `PENDING`, cada uno con el nombre y precio vigentes al agregarse.
+- [x] Cada unidad de menú puede tener un extra y una bebida opcionales, independientes y distintos de los de otras unidades.
+- [x] Una solicitud con producto u opción inválida no guarda ningún cambio.
+- [x] Crear o agregar para una atención cerrada responde 409 y no guarda cambios; una atención u orden inexistente responde 404.
+- [x] El detalle de una orden y el listado por atención incluyen sus ítems, estados, precios y selecciones, incluso tras el cierre.
+- [x] Solo `ADMIN`, `ATENCION` y `MOZO` autenticados acceden a estas operaciones.
+- [x] Las escrituras y el cierre concurrente no permiten agregar ítems a una atención ya cerrada.
+- [x] Los endpoints están documentados en OpenAPI y las pruebas relacionadas verifican los escenarios y errores anteriores.
 
 ## Decisiones
 
