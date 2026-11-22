@@ -72,8 +72,8 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 
 ## Desarrollo subagentes
 
-- Delegar la implementación al agente `implementador`.
-- Delegar las pruebas al agente `tester`.
+- Delegar la implementación al subagente `implementador`.
+- Delegar las pruebas al subagente `tester`.
 - Utilizar `documentacion` cuando sea necesario
   verificar APIs o documentación oficial.
 - Evitar modificaciones simultáneas sobre los
