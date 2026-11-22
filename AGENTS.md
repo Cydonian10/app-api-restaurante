@@ -36,6 +36,7 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 ## Testing
 
 - Respetar las convenciones de pruebas existentes.
+- Revisar `docs/testing.md`
 - Consultar https://docs.nestjs.com/fundamentals/testing cuando sea necesario implementar o modificar pruebas.
 - Utilizar Vitest como framework de testing.
 
@@ -68,3 +69,17 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 - Si una prueba falla, investigar la causa antes de corregirla.
 - No afirmar que las pruebas pasaron si no fueron ejecutadas.
 - Preguntar si existen dudas sobre el alcance de las pruebas.
+
+## Desarrollo subagentes
+
+- Delegar la implementación al agente `implementador`.
+- Delegar las pruebas al agente `tester`.
+- Utilizar `documentacion` cuando sea necesario
+  verificar APIs o documentación oficial.
+- Evitar modificaciones simultáneas sobre los
+  mismos archivos.
+- Esperar los resultados de los subagentes antes
+  de validar la implementación.
+- No crear subagentes para tareas triviales.
+- El agente principal es responsable de comprobar
+  el cumplimiento de la especificación.
