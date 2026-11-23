@@ -30,6 +30,7 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 - Seguir los patrones existentes antes de proponer soluciones nuevas.
 - No agregar capas, carpetas, dependencias ni abstracciones innecesarias.
 - No modificar la arquitectura establecida sin autorización.
+- Aplicar CQRS modular en NestJS.
 - Si una decisión arquitectónica no está documentada y no puede deducirse del código existente, preguntar antes de implementarla.
 - No asumir requisitos ni implementar funcionalidades que no hayan sido solicitadas.
 
@@ -40,6 +41,10 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 - Consultar https://docs.nestjs.com/fundamentals/testing cuando sea necesario implementar o modificar pruebas.
 - Utilizar Vitest como framework de testing.
 
+### Tests
+
+- Utilizar Vitest cuando esté configurado.
+
 ### Unit Tests
 
 - Ubicar los tests junto al archivo que se prueba.
@@ -48,6 +53,7 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 - Utilizar mocks para repositorios, servicios y dependencias externas.
 - Probar comportamientos, casos de error y reglas de negocio.
 - No utilizar una base de datos real en pruebas unitarias.
+- Crear pruebas unitarias para los handlers CQRS.
 
 ### E2E Tests
 
@@ -58,6 +64,7 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 - Utilizar una base de datos exclusiva para pruebas.
 - No ejecutar pruebas sobre datos de producción.
 - Aislar y limpiar los datos generados por cada prueba.
+- Crear pruebas E2E para los flujos requeridos.
 
 ### Reglas generales
 
@@ -74,8 +81,6 @@ Nest's packages are ESM only, and this project is ESM too: relative imports end 
 
 - Delegar la implementación al subagente `implementador`.
 - Delegar las pruebas al subagente `tester`.
-- Utilizar `documentacion` cuando sea necesario
-  verificar APIs o documentación oficial.
 - Evitar modificaciones simultáneas sobre los
   mismos archivos.
 - Esperar los resultados de los subagentes antes
