@@ -44,12 +44,14 @@ import {
 import { ProductType } from '../enums/product-type.enum.js';
 import {
   listProductsSchema,
+  listAdminProductsSchema,
   type ListProductsDto,
 } from '../dtos/list-products.dto.js';
 import type { UploadedImage } from '../storage/image-validation.js';
 import { CreateProductCommand } from '../commands/create-product/create-product.command.js';
 import { AddProductImageCommand } from '../commands/add-product-image/add-product-image.command.js';
 import { ListProductsQuery } from '../queries/list-products/list-products.query.js';
+import { GetAdminProductQuery } from '../queries/get-admin-product/get-admin-product.query.js';
 import { UpdateAvailabilityCommand } from '../commands/update-availability/update-availability.command.js';
 import {
   updateAvailabilitySchema,
@@ -94,8 +96,25 @@ export class ProductsController {
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @ApiQuery({ name: 'tipo', required: false, enum: ProductType })
-  listAdmin(@Query({ schema: listProductsSchema }) query: ListProductsDto) {
+  @ApiQuery({ name: 'nombre', required: false, type: String })
+  listAdmin(
+    @Query({ schema: listAdminProductsSchema }) query: ListProductsDto,
+  ) {
     return this.queries.execute(new ListProductsQuery(query, true));
+  }
+
+  @Get('admin/:id')
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener producto por ID (solo administradores)' })
+  @ApiOkResponse({ type: ProductSwaggerDto })
+  @ApiBadRequestResponse({ description: 'Identificador inválido.' })
+  @ApiUnauthorizedResponse({ description: 'Token ausente o inválido.' })
+  @ApiForbiddenResponse({ description: 'Se requiere el rol ADMIN.' })
+  @ApiNotFoundResponse({ description: 'Producto no encontrado.' })
+  getAdmin(@Param('id', ParseUUIDPipe) id: string) {
+    return this.queries.execute(new GetAdminProductQuery(id));
   }
 
   @Post()

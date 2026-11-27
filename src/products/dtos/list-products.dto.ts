@@ -14,4 +14,8 @@ export const listProductsSchema = z.object({
   tipo: z.enum(ProductType).optional(),
 });
 
-export type ListProductsDto = z.infer<typeof listProductsSchema>;
+export const listAdminProductsSchema = listProductsSchema.extend({
+  nombre: z.string().trim().max(255).optional(),
+});
+
+export type ListProductsDto = z.infer<typeof listAdminProductsSchema>;

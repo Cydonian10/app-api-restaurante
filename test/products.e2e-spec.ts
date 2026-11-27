@@ -103,6 +103,109 @@ describe('productos HTTP', () => {
       .expect(403);
   });
 
+  it('protege la consulta administrativa por ID y valida su identificador', async () => {
+    const id = randomUUID();
+    await request(app.getHttpServer())
+      .get(`/api/v1/products/admin/${id}`)
+      .expect(401);
+    await request(app.getHttpServer())
+      .get(`/api/v1/products/admin/${id}`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(403);
+    await request(app.getHttpServer())
+      .get('/api/v1/products/admin/no-es-uuid')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(400);
+    await request(app.getHttpServer())
+      .get(`/api/v1/products/admin/${id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+  });
+
+  it('busca por nombre sin distinguir mayúsculas antes de paginar y obtiene productos no disponibles por ID', async () => {
+    const prefix = `Busqueda-${adminId}`;
+    const ids: string[] = [];
+    for (const nombre of [
+      `${prefix} Lomo`,
+      `${prefix} lomo especial`,
+      `${prefix} Causa`,
+    ]) {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/products')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .field('nombre', nombre)
+        .field('precio', '10.50')
+        .field('tipo', 'PLATO_FONDO')
+        .expect(201);
+      const id = (response.body as { id: string }).id;
+      ids.push(id);
+      productIds.push(id);
+    }
+    await request(app.getHttpServer())
+      .patch(`/api/v1/products/${ids[0]}/disponibilidad`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ disponible: false })
+      .expect(200);
+    const pages: string[] = [];
+    for (const page of [1, 2]) {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/products/admin')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .query({
+          nombre: `${prefix} LOMO`,
+          tipo: 'PLATO_FONDO',
+          page,
+          limit: 1,
+        })
+        .expect(200);
+      const body = response.body as {
+        total: number;
+        totalPages: number;
+        items: { id: string }[];
+      };
+      expect(body).toMatchObject({ total: 2, totalPages: 2 });
+      expect(body.items).toHaveLength(1);
+      pages.push(body.items[0].id);
+    }
+    expect(pages.sort()).toEqual(ids.slice(0, 2).sort());
+    const detail = await request(app.getHttpServer())
+      .get(`/api/v1/products/admin/${ids[0]}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    expect(detail.body).toMatchObject({
+      id: ids[0],
+      nombre: `${prefix} Lomo`,
+      disponible: false,
+      precio: '10.50',
+      principal: true,
+    });
+    expect(detail.body).not.toHaveProperty('deletedAt');
+    expect(detail.body).not.toHaveProperty('imageKey');
+    await request(app.getHttpServer())
+      .delete(`/api/v1/products/${ids[0]}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+    await request(app.getHttpServer())
+      .get(`/api/v1/products/admin/${ids[0]}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(404);
+    const afterDelete = await request(app.getHttpServer())
+      .get('/api/v1/products/admin')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .query({ nombre: `${prefix} LOMO`, tipo: 'PLATO_FONDO' })
+      .expect(200);
+    expect(afterDelete.body).toMatchObject({
+      total: 1,
+      items: [{ id: ids[1] }],
+    });
+    const noMatch = await request(app.getHttpServer())
+      .get('/api/v1/products/admin')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .query({ nombre: `${prefix} LOMO`, tipo: 'BEBIDA' })
+      .expect(200);
+    expect(noMatch.body).toMatchObject({ total: 0, items: [] });
+  });
+
   it('crea, lista, sube imagen y cambia disponibilidad', async () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/products')

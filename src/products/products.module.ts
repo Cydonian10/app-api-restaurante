@@ -1,6 +1,7 @@
 import { CreateProductHandler } from './commands/create-product/create-product.handler.js';
 import { AddProductImageHandler } from './commands/add-product-image/add-product-image.handler.js';
 import { ListProductsHandler } from './queries/list-products/list-products.handler.js';
+import { GetAdminProductHandler } from './queries/get-admin-product/get-admin-product.handler.js';
 import { UpdateAvailabilityHandler } from './commands/update-availability/update-availability.handler.js';
 import {
   UpdateProductHandler,
@@ -25,6 +26,7 @@ import { ListUsersAdminGuard } from '../users/guards/list-users-admin.guard.js';
     CreateProductHandler,
     AddProductImageHandler,
     ListProductsHandler,
+    GetAdminProductHandler,
     UpdateAvailabilityHandler,
     UpdateProductHandler,
     DeleteProductHandler,

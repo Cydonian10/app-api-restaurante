@@ -1,7 +1,8 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { ILike, IsNull, Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity.js';
+import { toProductResponse } from '../../dtos/product-response.js';
 import { ListProductsQuery } from './list-products.query.js';
 @QueryHandler(ListProductsQuery)
 export class ListProductsHandler implements IQueryHandler<ListProductsQuery> {
@@ -9,11 +10,14 @@ export class ListProductsHandler implements IQueryHandler<ListProductsQuery> {
     @InjectRepository(Product) private readonly products: Repository<Product>,
   ) {}
   async execute({ filters: query, admin }: ListProductsQuery) {
-    const { page, limit, tipo } = query;
+    const { page, limit, tipo, nombre } = query;
     const where = {
       deletedAt: IsNull(),
       ...(admin ? {} : { disponible: true }),
       ...(tipo ? { tipo } : {}),
+      ...(admin && nombre
+        ? { nombre: ILike(`%${nombre.replace(/[\\%_]/g, '\\$&')}%`) }
+        : {}),
     };
     const total = await this.products.count({ where });
     const totalPages = Math.ceil(total / limit);
@@ -27,18 +31,7 @@ export class ListProductsHandler implements IQueryHandler<ListProductsQuery> {
             take: limit,
           });
     return {
-      items: products.map((product) => ({
-        id: product.id,
-        nombre: product.nombre,
-        descripcion: product.descripcion,
-        precio: product.precio,
-        tipo: product.tipo,
-        principal: product.principal,
-        disponible: product.disponible,
-        imageUrl: product.imageUrl,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-      })),
+      items: products.map(toProductResponse),
       page,
       limit,
       total,
