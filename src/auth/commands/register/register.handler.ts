@@ -13,7 +13,10 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
   ) {}
 
   async execute({ data }: RegisterCommand) {
-    const user = await this.commands.execute(new CreateUserCommand(data));
+    const { name, email, password } = data;
+    const user = await this.commands.execute(
+      new CreateUserCommand({ name, email, password }),
+    );
     try {
       await this.verification.send(user);
     } catch (error) {

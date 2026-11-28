@@ -4,6 +4,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -79,7 +80,40 @@ export class UsersController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Crear un usuario con sus datos personales' })
+  @Authenticate({ providers: [JwtAuthProvider] })
+  @UseGuards(ListUsersAdminGuard)
+  @ApiOperation({
+    summary: 'Crear un usuario con sus datos personales (solo administradores)',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['name', 'email', 'password'],
+      properties: {
+        name: { type: 'string', minLength: 1, maxLength: 120 },
+        email: { type: 'string', format: 'email' },
+        password: {
+          type: 'string',
+          format: 'password',
+          minLength: 8,
+          maxLength: 128,
+        },
+        lastName: { type: 'string', minLength: 1, maxLength: 120 },
+        phone: { type: 'string', minLength: 1, maxLength: 30 },
+        document: { type: 'string', minLength: 1, maxLength: 50 },
+        birthDate: { type: 'string', format: 'date' },
+        residence: { type: 'string', minLength: 1, maxLength: 200 },
+        role: {
+          type: 'string',
+          enum: Object.values(UserRole),
+          default: UserRole.CLIENTE,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Datos de usuario inválidos.' })
+  @ApiUnauthorizedResponse({ description: 'Token ausente o inválido.' })
+  @ApiForbiddenResponse({ description: 'Se requiere el rol ADMIN.' })
   async create(@Body({ schema: createUserSchema }) body: CreateUserDto) {
     const user = await this.commands.execute(new CreateUserCommand(body));
     return PublicUser.toDto(user);

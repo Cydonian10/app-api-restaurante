@@ -22,7 +22,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         const user = manager.create(User, {
           id: randomUUID(),
           email: data.email,
-          role: UserRole.CLIENTE,
+          role: data.role ?? UserRole.CLIENTE,
           passwordHash,
         });
         await manager.save(user);

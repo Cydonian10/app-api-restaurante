@@ -1,5 +1,6 @@
 import z from 'zod';
 import { registerSchema } from '../../auth/dtos/register.dto.js';
+import { UserRole } from '../enums/user-role.enum.js';
 
 export const createUserSchema = registerSchema.extend({
   lastName: z.string().trim().min(1).max(120).optional(),
@@ -7,5 +8,6 @@ export const createUserSchema = registerSchema.extend({
   document: z.string().trim().min(1).max(50).optional(),
   birthDate: z.iso.date().optional(),
   residence: z.string().trim().min(1).max(200).optional(),
+  role: z.enum(UserRole).optional(),
 });
 export type CreateUserDto = z.infer<typeof createUserSchema>;
